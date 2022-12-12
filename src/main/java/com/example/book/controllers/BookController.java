@@ -24,13 +24,20 @@ public class BookController {
 	@Autowired
 	private BookService bookServ;
 	
+//	public void checkSession(HttpSession session) {
+//		Boolean userSession = session.getAttribute("userId") == null;
+//
+//	}
 	
 //	brining in session to check if the user is in session, or even logged in.
 //	wont be able to access other pages that it shouldnt have access to.
 	@GetMapping("/dashboard")
 	public String dashboard(HttpSession session, Model model) {
 //		checking if the userID is in session
-		if(session.getAttribute("userId") == null) {
+//		assigning a boolean of the session check
+		Boolean userSession = session.getAttribute("userId") == null;
+		
+		if(userSession) {
 			return "redirect:/";
 		} else {
 //			if a userID is in session , it will continue to the dashboard page that will be showing the list 
@@ -45,7 +52,9 @@ public class BookController {
 //	display the form
 	@GetMapping("/book/new")
 	public String displayBookForm(@ModelAttribute("newBook") Book book, HttpSession session) {
-		if(session.getAttribute("userId") == null) {
+		Boolean userSession = session.getAttribute("userId") == null;
+
+		if(userSession) {
 			return "hacker.jsp";
 		} else {
 		return "create.jsp";
@@ -62,8 +71,9 @@ public class BookController {
 	public String createBook(@Valid @ModelAttribute("newBook") Book book,
 			BindingResult result, Model model,HttpSession session) {
 //		checking if the userID is in session
+		Boolean userSession = session.getAttribute("userId") == null;
 
-		if(session.getAttribute("userId") == null) {
+		if(userSession) {
 			return "redirect:/";
 		} 
 //		checking for errors on the file
@@ -82,8 +92,10 @@ public class BookController {
 	@GetMapping("/display/book/{id}")
 	public String displayBook(@PathVariable("id") Long id, Model model,HttpSession session) {
 //		checking if the userID is in session
-
-		if(session.getAttribute("userId") == null) {
+		Boolean userSession = session.getAttribute("userId") == null;
+		
+		
+		if(userSession) {
 			return "redirect:/";
 			
 		}  else {
@@ -106,21 +118,55 @@ public class BookController {
 	
 	
 	
-//	Request method for edit button
-//	pass in id into the route to get the specific id, and bring in session and model model
+////	Request method for edit button
+////	pass in id into the route to get the specific id, and bring in session and model model
+//	@RequestMapping("/book/{id}/edit")
+//	public String edit(@PathVariable("id") Long id, Model model,HttpSession session) {
+//		Boolean userSession = session.getAttribute("userId") == null;
+//		Boolean checkUser = session.getAttribute("userId").equals(bookServ.getBook(id).getUser().getId());
+//		
+////		checking if the userID is in session
+//		if(userSession) {
+//			return "redirect:/";
+//		} 
+//		if (checkUser){ 
+//			return "redirect:/";
+//		}
+//		
+//		else {
+////			naming foundBook and setting it to the service file and the get book method and passing in id
+////			from the pathvariable
+//	    Book foundBook = bookServ.getBook(id);   // <--- path variable id
+////	    assigning the attribute a name called "foundBook" to be passed into jsp
+//	    model.addAttribute("foundBook", foundBook); //<--- passing foundBook from above that carries the method
+//	    return "edit.jsp";
+//		}
+//	}
+	
 	@RequestMapping("/book/{id}/edit")
 	public String edit(@PathVariable("id") Long id, Model model,HttpSession session) {
-//		checking if the userID is in session
-		if(session.getAttribute("userId") == null) {
-			return "redirect:/";
-		} else {
-//			naming foundBook and setting it to the service file and the get book method and passing in id
-//			from the pathvariable
-	    Book foundBook = bookServ.getBook(id);   // <--- path variable id
-//	    assigning the attribute a name called "foundBook" to be passed into jsp
-	    model.addAttribute("foundBook", foundBook); //<--- passing foundBook from above that carries the method
-	    return "edit.jsp";
-		}
+	    // Check if the user is logged in
+	    Boolean userSession = session.getAttribute("userId") == null;
+	    if (userSession) {
+	        // Get the Book object with the specified id
+	        Book foundBook = bookServ.getBook(id);
+
+	        // Check if the logged-in user is the same as the user associated with the Book
+	        Boolean checkUser = foundBook.getUser().getId().equals(session.getAttribute("userId"));
+	        if (checkUser) {
+	            // The logged-in user is the same as the user associated with the Book
+	            // Allow the user to edit the Book
+	            model.addAttribute("foundBook", foundBook);
+	            return "edit.jsp";
+	        } else {
+	            // The logged-in user is not the same as the user associated with the Book
+	            // Do not allow the user to edit the Book
+	            return "redirect:/";
+	        }
+	    } else {
+	        // The user is not logged in
+	        return "redirect:/";
+	    }
 	}
 	
 	
@@ -128,8 +174,10 @@ public class BookController {
 	@PutMapping("/edit/{id}")
 //	foundBook is the attribute to be passed into jsp form
 	public String editBookForm(@Valid @ModelAttribute("foundBook")Book book, BindingResult result,HttpSession session) {
-//		checking if the userID is in session
-		if(session.getAttribute("userId") == null) {
+//		checking if the userID is in session/ assigning it the a boolean variable
+		Boolean userSession = session.getAttribute("userId") == null;
+
+		if(userSession) {
 			return "redirect:/";
 		}
 		if(result.hasErrors()) {

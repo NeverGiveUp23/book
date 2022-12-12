@@ -32,7 +32,7 @@
 <p><c:out value="${book.description}"></c:out></p>
 <!-- session scope and c:if, is checking if the book associated with the user and id is the person that posted it -->
 <!--  if so, it will display the edit and delete button for that user-->
-<c:if test="${sessionScope.userId == book.user.id}">
+<c:if test="${sessionScope.userId.equals(book.user.id)}">
   <%-- show the edit and delete buttons --%>
   <!-- make sure to pass in the correct naming convention for the edit and delete route -->
   <!--  tried to use user.id instead but, the id we want is from the book, and book has the user tied to it-->

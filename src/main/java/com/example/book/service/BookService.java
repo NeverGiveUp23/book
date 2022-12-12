@@ -3,6 +3,8 @@ package com.example.book.service;
 import java.util.List;
 import java.util.Optional;
 
+import javax.servlet.http.HttpSession;
+
 import org.springframework.stereotype.Service;
 
 import com.example.book.models.Book;
@@ -50,6 +52,11 @@ public class BookService {
 	}
 	
 	
+//	session check/ practice
+	public void checkSession(HttpSession session) {
+	Boolean userSession = session.getAttribute("userId") == null;
+
+	}
 
 
 }
